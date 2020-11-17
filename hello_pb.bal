@@ -1,9 +1,106 @@
+import ballerina/grpc;
+
+public type songsServiceBlockingClient client object {
+
+    *grpc:AbstractClientEndpoint;
+
+    private grpc:Client grpcClient;
+
+    public function __init(string url, grpc:ClientConfiguration? config = ()) {
+        // initialize client endpoint.
+        self.grpcClient = new(url, config);
+        checkpanic self.grpcClient.initStub(self, "blocking", ROOT_DESCRIPTOR, getDescriptorMap());
+    }
+
+    public remote function writeRecord(RecordInfo req, grpc:Headers? headers = ()) returns ([string, grpc:Headers]|grpc:Error) {
+        
+        var payload = check self.grpcClient->blockingExecute("songsService/writeRecord", req, headers);
+        grpc:Headers resHeaders = new;
+        anydata result = ();
+        [result, resHeaders] = payload;
+        return [result.toString(), resHeaders];
+    }
+
+    public remote function updateRecord(RecordInfo req, grpc:Headers? headers = ()) returns ([string, grpc:Headers]|grpc:Error) {
+        
+        var payload = check self.grpcClient->blockingExecute("songsService/updateRecord", req, headers);
+        grpc:Headers resHeaders = new;
+        anydata result = ();
+        [result, resHeaders] = payload;
+        return [result.toString(), resHeaders];
+    }
+
+    public remote function readRecord(string req, grpc:Headers? headers = ()) returns ([string, grpc:Headers]|grpc:Error) {
+        
+        var payload = check self.grpcClient->blockingExecute("songsService/readRecord", req, headers);
+        grpc:Headers resHeaders = new;
+        anydata result = ();
+        [result, resHeaders] = payload;
+        return [result.toString(), resHeaders];
+    }
+
+};
+
+public type songsServiceClient client object {
+
+    *grpc:AbstractClientEndpoint;
+
+    private grpc:Client grpcClient;
+
+    public function __init(string url, grpc:ClientConfiguration? config = ()) {
+        // initialize client endpoint.
+        self.grpcClient = new(url, config);
+        checkpanic self.grpcClient.initStub(self, "non-blocking", ROOT_DESCRIPTOR, getDescriptorMap());
+    }
+
+    public remote function writeRecord(RecordInfo req, service msgListener, grpc:Headers? headers = ()) returns (grpc:Error?) {
+        
+        return self.grpcClient->nonBlockingExecute("songsService/writeRecord", req, msgListener, headers);
+    }
+
+    public remote function updateRecord(RecordInfo req, service msgListener, grpc:Headers? headers = ()) returns (grpc:Error?) {
+        
+        return self.grpcClient->nonBlockingExecute("songsService/updateRecord", req, msgListener, headers);
+    }
+
+    public remote function readRecord(string req, service msgListener, grpc:Headers? headers = ()) returns (grpc:Error?) {
+        
+        return self.grpcClient->nonBlockingExecute("songsService/readRecord", req, msgListener, headers);
+    }
+
+};
+
+public type Artists record {|
+    string name = "";
+    string member = "";
+    
+|};
 
 
-const string ROOT_DESCRIPTOR = "0A0B68656C6C6F2E70726F746F";
+public type Songs record {|
+    string title = "";
+    string genre = "";
+    string platform = "";
+    
+|};
+
+
+public type RecordInfo record {|
+    string date = "";
+    Artists[] artists = [];
+    string band = "";
+    Songs[] songs = [];
+    string KEY = "";
+    
+|};
+
+
+
+const string ROOT_DESCRIPTOR = "0A0B68656C6C6F2E70726F746F1A1E676F6F676C652F70726F746F6275662F77726170706572732E70726F746F22350A074172746973747312120A046E616D6518012001280952046E616D6512160A066D656D62657218022001280952066D656D626572224F0A05536F6E677312140A057469746C6518012001280952057469746C6512140A0567656E7265180220012809520567656E7265121A0A08706C6174666F726D1803200128095208706C6174666F726D2288010A0A5265636F7264496E666F12120A046461746518012001280952046461746512220A076172746973747318022003280B32082E4172746973747352076172746973747312120A0462616E64180320012809520462616E64121C0A05736F6E677318042003280B32062E536F6E67735205736F6E677312100A034B455918052001280952034B455932CD010A0C736F6E67735365727669636512380A0B77726974655265636F7264120B2E5265636F7264496E666F1A1C2E676F6F676C652E70726F746F6275662E537472696E6756616C756512390A0C7570646174655265636F7264120B2E5265636F7264496E666F1A1C2E676F6F676C652E70726F746F6275662E537472696E6756616C756512480A0A726561645265636F7264121C2E676F6F676C652E70726F746F6275662E537472696E6756616C75651A1C2E676F6F676C652E70726F746F6275662E537472696E6756616C7565620670726F746F33";
 function getDescriptorMap() returns map<string> {
     return {
-        "hello.proto":"0A0B68656C6C6F2E70726F746F"
+        "hello.proto":"0A0B68656C6C6F2E70726F746F1A1E676F6F676C652F70726F746F6275662F77726170706572732E70726F746F22350A074172746973747312120A046E616D6518012001280952046E616D6512160A066D656D62657218022001280952066D656D626572224F0A05536F6E677312140A057469746C6518012001280952057469746C6512140A0567656E7265180220012809520567656E7265121A0A08706C6174666F726D1803200128095208706C6174666F726D2288010A0A5265636F7264496E666F12120A046461746518012001280952046461746512220A076172746973747318022003280B32082E4172746973747352076172746973747312120A0462616E64180320012809520462616E64121C0A05736F6E677318042003280B32062E536F6E67735205736F6E677312100A034B455918052001280952034B455932CD010A0C736F6E67735365727669636512380A0B77726974655265636F7264120B2E5265636F7264496E666F1A1C2E676F6F676C652E70726F746F6275662E537472696E6756616C756512390A0C7570646174655265636F7264120B2E5265636F7264496E666F1A1C2E676F6F676C652E70726F746F6275662E537472696E6756616C756512480A0A726561645265636F7264121C2E676F6F676C652E70726F746F6275662E537472696E6756616C75651A1C2E676F6F676C652E70726F746F6275662E537472696E6756616C7565620670726F746F33",
+        "google/protobuf/wrappers.proto":"0A1E676F6F676C652F70726F746F6275662F77726170706572732E70726F746F120F676F6F676C652E70726F746F62756622230A0B446F75626C6556616C756512140A0576616C7565180120012801520576616C756522220A0A466C6F617456616C756512140A0576616C7565180120012802520576616C756522220A0A496E74363456616C756512140A0576616C7565180120012803520576616C756522230A0B55496E74363456616C756512140A0576616C7565180120012804520576616C756522220A0A496E74333256616C756512140A0576616C7565180120012805520576616C756522230A0B55496E74333256616C756512140A0576616C756518012001280D520576616C756522210A09426F6F6C56616C756512140A0576616C7565180120012808520576616C756522230A0B537472696E6756616C756512140A0576616C7565180120012809520576616C756522220A0A427974657356616C756512140A0576616C756518012001280C520576616C756542570A13636F6D2E676F6F676C652E70726F746F627566420D577261707065727350726F746F50015A057479706573F80101A20203475042AA021E476F6F676C652E50726F746F6275662E57656C6C4B6E6F776E5479706573620670726F746F33"
         
     };
 }
