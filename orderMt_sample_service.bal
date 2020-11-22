@@ -9,10 +9,10 @@ service orderMt on ep {
 
     resource function addOrder(grpc:Caller caller, musicOrder value) {
     
-    string musicId = value.date;
+    string musicId = value.id;
     musicOrders[value.date] = <@untainted>value;
 
-    string payload = "STATUS : MUSIC ADDED, Date: "+ value.date;
+    string payload = "STATUS : MUSIC ADDED, Date: "+ value.id;
    
   
 
@@ -58,16 +58,68 @@ result = caller->complete();
 
     resource function updateOrder(grpc:Caller caller, musicOrder value) {
        
-       
-       
-        // Implementation goes here.
 
-        // You should return a string
+
+
+
+   
+    string musicId = value.date;
+    musicOrders[value.date] = <@untainted>value;
+
+    string payload = "STATUS : MUSIC updatED, Date: "+ value.id;
+   
+  
+
+  error? result = caller->send(payload);
+  result = caller ->complete();
+
+    if (result is error){
+        log:printError("Error from connector: "+result.reason().toString());
+    }    
     }
-    resource function deleteOrder(grpc:Caller caller, string value) {
-        // Implementation goes here.
 
-        // You should return a string
+
+    resource function deleteOrder(grpc:Caller caller, string musicId) {
+        
+
+string payload = "";
+
+         error? result = ();
+
+            
+
+         if (musicOrders.hasKey(musicId)){
+
+             musicOrders[musicId]={id:"",date:"",artists:[{name:"none",member:"none"},{name:"none",member:"none"},{name:"none",member:"none"}],band:"",songs:[{title:"none",genre:"none",platform:"none"}]};
+
+        var jsonValue = json.constructFrom(musicOrders[musicId]);
+          
+          if (jsonValue is error) {
+              result = caller ->sendError(grpc:INTERNAL,<string>jsonValue.detail().message);
+          } else {
+json orderDetails=jsonValue;
+payload = orderDetails.toString();
+result = caller->send(payload);
+result = caller->complete();
+
+
+          } 
+          
+         } else {
+             payload = "song could not be deleted";
+             result = caller ->sendError(grpc:NOT_FOUND, payload);
+         }
+
+         if (result is error){
+             log:printError("Error from connector: "+result.reason().toString());
+         }
+
+
+
+
+
+
+        
     }
 }
 
@@ -85,6 +137,7 @@ string platform;
 };
 
 public type musicOrder record {|
+    string id;
     string date;
     persons[] artists;
     string band;
