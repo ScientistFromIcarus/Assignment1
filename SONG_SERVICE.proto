@@ -1,0 +1,27 @@
+syntax = "proto3";
+import "google/protobuf/wrappers.proto";
+
+service songsService {
+rpc writeRecord(RecordInfo) returns (google.protobuf.StringValue);
+rpc updateRecord(RecordInfo) returns (google.protobuf.StringValue);
+rpc readRecord(google.protobuf.StringValue) returns (google.protobuf.StringValue);
+}
+
+message Artists {
+string name = 1;
+string member = 2;
+}
+
+message Songs {
+string title = 1;
+string genre = 2;
+string platform = 3;
+}
+
+message RecordInfo {
+string date = 1;
+repeated Artists artists = 2;
+string band = 3;
+repeated Songs songs = 4;
+string KEY = 5;
+}
