@@ -98,6 +98,7 @@ string platform;
 };
 
 public type musicOrder record {|
+    string id;
     string date;
     persons[] artists ;
     string band ;
